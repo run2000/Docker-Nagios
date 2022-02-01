@@ -18,7 +18,7 @@ ENV NG_CGI_DIR             ${NAGIOS_HOME}/sbin
 ENV NG_WWW_DIR             ${NAGIOS_HOME}/share/nagiosgraph
 ENV NG_CGI_URL             /cgi-bin
 ENV NAGIOS_BRANCH          nagios-4.4.6
-ENV NAGIOS_PLUGINS_BRANCH  release-2.3.3
+ENV NAGIOS_PLUGINS_BRANCH  release-2.4.0
 ENV NRPE_BRANCH            nrpe-4.0.3
 ENV NCPA_BRANCH            v2.3.1
 ENV NSCA_BRANCH            nsca-2.10.0
