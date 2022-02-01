@@ -84,7 +84,7 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         unzip                               \
         python                              \
                                                 && \
-    apt-get clean && rm -f /var/lib/apt/lists/*
+    apt-get clean && find /var/lib/apt/lists/ -maxdepth 1 -type f -delete
 
 RUN ( egrep -i "^${NAGIOS_GROUP}"    /etc/group || groupadd $NAGIOS_GROUP    )                         && \
     ( egrep -i "^${NAGIOS_CMDGROUP}" /etc/group || groupadd $NAGIOS_CMDGROUP )
@@ -187,12 +187,15 @@ RUN export DOC_ROOT="DocumentRoot $(echo $NAGIOS_HOME/share)"                   
 RUN mkdir -p -m 0755 /usr/share/snmp/mibs                     && \
     mkdir -p         ${NAGIOS_HOME}/etc/conf.d                && \
     mkdir -p         ${NAGIOS_HOME}/etc/monitor               && \
+    mkdir -p         ${NAGIOS_HOME}/mibs                      && \
     mkdir -p -m 700  ${NAGIOS_HOME}/.ssh                      && \
     chown ${NAGIOS_USER}:${NAGIOS_GROUP} ${NAGIOS_HOME}/.ssh  && \
+    chown ${NAGIOS_USER}:${NAGIOS_GROUP} ${NAGIOS_HOME}/mibs  && \
     touch /usr/share/snmp/mibs/.foo                           && \
     ln -s /usr/share/snmp/mibs ${NAGIOS_HOME}/libexec/mibs    && \
     ln -s ${NAGIOS_HOME}/bin/nagios /usr/local/bin/nagios     && \
-    download-mibs && echo "mibs +ALL" > /etc/snmp/snmp.conf
+    download-mibs && echo "mibs +ALL" > /etc/snmp/snmp.conf   && \
+    echo "mibdirs +${NAGIOS_HOME}/mibs" >> /etc/snmp/snmp.conf
 
 RUN sed -i 's,/bin/mail,/usr/bin/mail,' ${NAGIOS_HOME}/etc/objects/commands.cfg  && \
     sed -i 's,/usr/usr,/usr,'           ${NAGIOS_HOME}/etc/objects/commands.cfg
@@ -247,6 +250,6 @@ RUN echo "ServerName ${NAGIOS_FQDN}" > /etc/apache2/conf-available/servername.co
 
 EXPOSE 80
 
-VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "/opt/custom-nagios-plugins" "/opt/nagiosgraph/var" "/opt/nagiosgraph/etc"
+VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "/opt/custom-nagios-plugins" "/opt/nagiosgraph/var" "/opt/nagiosgraph/etc" "/opt/nagios/mibs"
 
 CMD [ "/usr/local/bin/start_nagios" ]
