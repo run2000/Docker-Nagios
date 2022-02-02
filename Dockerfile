@@ -22,6 +22,7 @@ LABEL name="Nagios" \
 # Variables both build and runtime
 
 ARG NAGIOS_HOME=/opt/nagios
+ARG NAGIOSGRAPH_HOME=/opt/nagiosgraph
 ARG NAGIOS_USER=nagios
 ARG NAGIOS_GROUP=nagios
 ARG NAGIOS_CMDUSER=nagios
@@ -190,7 +191,7 @@ RUN cd /tmp                                                          && \
     git clone https://git.code.sf.net/p/nagiosgraph/git nagiosgraph  && \
     cd nagiosgraph                                                   && \
     ./install.pl --install                                      \
-        --prefix /opt/nagiosgraph                               \
+        --prefix ${NAGIOSGRAPH_HOME}                            \
         --nagios-user ${NAGIOS_USER}                            \
         --www-user ${NAGIOS_USER}                               \
         --nagios-perfdata-file ${NAGIOS_HOME}/var/perfdata.log  \
@@ -294,6 +295,6 @@ ENV NAGIOS_HOME=$NAGIOS_HOME \
 
 EXPOSE 80
 
-VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "/opt/custom-nagios-plugins" "/opt/nagiosgraph/var" "/opt/nagiosgraph/etc" "${NAGIOS_HOME}/mibs"
+VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "${NAGIOS_HOME}/custom-plugins" "${NAGIOSGRAPH_HOME}/var" "${NAGIOSGRAPH_HOME}/etc" "${NAGIOS_HOME}/mibs"
 
 CMD [ "/usr/local/bin/start_nagios" ]
