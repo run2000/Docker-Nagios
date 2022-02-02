@@ -2,14 +2,24 @@ ARG  UBUNTU_VERSION=20.04
 
 FROM ubuntu:$UBUNTU_VERSION
 
+# Arguments for the LABELs and the branches defined later
+
+ARG NAGIOS_VER=4.4.6
+ARG NAGIOS_PLUGINS_VER=2.4.0
+ARG NRPE_VER=4.0.3
+ARG NCPA_VER=2.4.0
+ARG NSCA_VER=2.10.1
+
 LABEL name="Nagios" \
-    nagiosVersion="4.4.6" \
-    nagiosPluginsVersion="2.4.0" \
-    nrpeVersion="4.0.3" \
-    nscaVersion="2.10.1" \
-    ncpaVersion="2.4.0" \
+    nagiosVersion=$NAGIOS_VER \
+    nagiosPluginsVersion=$NAGIOS_PLUGINS_VER \
+    nrpeVersion=$NRPE_VER \
+    nscaVersion=$NSCA_VER \
+    ncpaVersion=$NCPA_VER \
     homepage="https://www.nagios.com/" \
     maintainer="NicholasC <run2000@gmail.com>"
+
+# Variables both build and runtime
 
 ENV NAGIOS_HOME            /opt/nagios
 ENV NAGIOS_USER            nagios
@@ -21,20 +31,25 @@ ENV NAGIOSADMIN_USER       nagiosadmin
 ENV NAGIOSADMIN_PASS       nagios
 ENV APACHE_RUN_USER        nagios
 ENV APACHE_RUN_GROUP       nagios
+ENV APACHE_LOCK_DIR        /var/run
+ENV APACHE_LOG_DIR         /var/log/apache2
 ENV NAGIOS_TIMEZONE        UTC
 
-ENV DEBIAN_FRONTEND        noninteractive
+# For Postfix build-time configuration
+ARG DEBIAN_FRONTEND=noninteractive
 
-ENV NG_NAGIOS_CONFIG_FILE  ${NAGIOS_HOME}/etc/nagios.cfg
-ENV NG_CGI_DIR             ${NAGIOS_HOME}/sbin
-ENV NG_WWW_DIR             ${NAGIOS_HOME}/share/nagiosgraph
-ENV NG_CGI_URL             /cgi-bin
+# Build variables
+ARG NG_NAGIOS_CONFIG_FILE=${NAGIOS_HOME}/etc/nagios.cfg
+ARG NG_CGI_DIR=${NAGIOS_HOME}/sbin
+ARG NG_WWW_DIR=${NAGIOS_HOME}/share/nagiosgraph
+ARG NG_CGI_URL=/cgi-bin
 
-ENV NAGIOS_BRANCH          nagios-4.4.6
-ENV NAGIOS_PLUGINS_BRANCH  release-2.4.0
-ENV NRPE_BRANCH            nrpe-4.0.3
-ENV NCPA_BRANCH            v2.4.0
-ENV NSCA_TAG               nsca-2.10.1
+# Tags and branches for Git checkout
+ARG NAGIOS_BRANCH="nagios-${NAGIOS_VER}"
+ARG NAGIOS_PLUGINS_BRANCH="release-${NAGIOS_PLUGINS_VER}"
+ARG NRPE_BRANCH="nrpe-${NRPE_VER}"
+ARG NCPA_BRANCH="v${NCPA_VER}"
+ARG NSCA_TAG="nsca-${NSCA_VER}"
 
 
 RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set-selections  && \
@@ -253,9 +268,6 @@ RUN sed -i 's/ askcc//' /etc/mail.rc
 
 # enable all runit services
 RUN ln -s /etc/sv/* /etc/service
-
-ENV APACHE_LOCK_DIR /var/run
-ENV APACHE_LOG_DIR /var/log/apache2
 
 #Set ServerName and timezone for Apache
 RUN echo "ServerName ${NAGIOS_FQDN}" > /etc/apache2/conf-available/servername.conf    && \
