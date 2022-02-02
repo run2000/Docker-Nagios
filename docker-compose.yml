@@ -22,5 +22,6 @@ volumes:
     nagiosetc:
     nagiosvar:
     customplugins:
+    custommibfiles:
     nagiosgraphvar:
     nagiosgraphetc:
