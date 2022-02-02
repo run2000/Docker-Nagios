@@ -63,7 +63,7 @@ The default credentials for the web interface is `nagiosadmin` / `nagios`
 To change this:
 
 * Set the NAGIOSADMIN_USER and NAGIOSADMIN_PASS environment variables
-* Update the /opt/nagios/etc/cgi.cfg and update the authorized_for_* parameters to point add the new admin user
+* Update the /opt/nagios/etc/cgi.cfg file and update the authorized_for_* parameters to point add the new admin user
 * Delete the /opt/nagios/etc/htpasswd.users file. This will be re-generated when the container is started.
 
 ### Extra Plugins
