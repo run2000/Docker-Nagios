@@ -14,6 +14,7 @@ services:
     - nagiosetc:/opt/nagios/etc
     - nagiosvar:/opt/nagios/var
     - customplugins:/opt/nagios/custom-plugins
+    - custommibfiles:/opt/nagios/mibs
     - nagiosgraphvar:/opt/nagiosgraph/var
     - nagiosgraphetc:/opt/nagiosgraph/etc
 
