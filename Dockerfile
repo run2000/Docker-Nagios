@@ -1,5 +1,15 @@
-FROM ubuntu:20.04
-MAINTAINER Jason Rivers <jason@jasonrivers.co.uk>
+ARG  UBUNTU_VERSION=20.04
+
+FROM ubuntu:$UBUNTU_VERSION
+
+LABEL name="Nagios" \
+    nagiosVersion="4.4.6" \
+    nagiosPluginsVersion="2.4.0" \
+    nrpeVersion="4.0.3" \
+    nscaVersion="2.10.1" \
+    ncpaVersion="2.4.0" \
+    homepage="https://www.nagios.com/" \
+    maintainer="NicholasC <run2000@gmail.com>"
 
 ENV NAGIOS_HOME            /opt/nagios
 ENV NAGIOS_USER            nagios
@@ -12,16 +22,19 @@ ENV NAGIOSADMIN_PASS       nagios
 ENV APACHE_RUN_USER        nagios
 ENV APACHE_RUN_GROUP       nagios
 ENV NAGIOS_TIMEZONE        UTC
+
 ENV DEBIAN_FRONTEND        noninteractive
+
 ENV NG_NAGIOS_CONFIG_FILE  ${NAGIOS_HOME}/etc/nagios.cfg
 ENV NG_CGI_DIR             ${NAGIOS_HOME}/sbin
 ENV NG_WWW_DIR             ${NAGIOS_HOME}/share/nagiosgraph
 ENV NG_CGI_URL             /cgi-bin
+
 ENV NAGIOS_BRANCH          nagios-4.4.6
 ENV NAGIOS_PLUGINS_BRANCH  release-2.4.0
 ENV NRPE_BRANCH            nrpe-4.0.3
-ENV NCPA_BRANCH            v2.3.1
-ENV NSCA_BRANCH            nsca-2.10.0
+ENV NCPA_BRANCH            v2.4.0
+ENV NSCA_TAG               nsca-2.10.1
 
 
 RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set-selections  && \
@@ -252,6 +265,6 @@ RUN echo "ServerName ${NAGIOS_FQDN}" > /etc/apache2/conf-available/servername.co
 
 EXPOSE 80
 
-VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "/opt/custom-nagios-plugins" "/opt/nagiosgraph/var" "/opt/nagiosgraph/etc" "/opt/nagios/mibs"
+VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "/opt/custom-nagios-plugins" "/opt/nagiosgraph/var" "/opt/nagiosgraph/etc" "${NAGIOS_HOME}/mibs"
 
 CMD [ "/usr/local/bin/start_nagios" ]
