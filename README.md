@@ -64,5 +64,8 @@ The default credentials for the web interface is `nagiosadmin` / `nagios`
 
 * Nagios nrpe [<http://exchange.nagios.org/directory/Addons/Monitoring-Agents/NRPE--2D-Nagios-Remote-Plugin-Executor/details>]
 * Nagiosgraph [<http://exchange.nagios.org/directory/Addons/Graphing-and-Trending/nagiosgraph/details>]
+* NSCA [<https://github.com/NagiosEnterprises/nsca>]
+* NRPE [<https://github.com/NagiosEnterprises/nrpe>]
+* NCPA [<https://github.com/NagiosEnterprises/ncpa>]
 
 
