@@ -3,6 +3,7 @@
 
 . /etc/default/apache-htcacheclean
 
+echo "ServerName ${NAGIOS_FQDN}" > /etc/apache2/conf-available/servername.conf
 export TZ="${NAGIOS_TIMEZONE}"
 
 exec /usr/sbin/apache2 -D NO_DETACH

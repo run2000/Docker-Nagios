@@ -21,19 +21,19 @@ LABEL name="Nagios" \
 
 # Variables both build and runtime
 
-ENV NAGIOS_HOME            /opt/nagios
-ENV NAGIOS_USER            nagios
-ENV NAGIOS_GROUP           nagios
-ENV NAGIOS_CMDUSER         nagios
-ENV NAGIOS_CMDGROUP        nagios
-ENV NAGIOS_FQDN            nagios.example.com
-ENV NAGIOSADMIN_USER       nagiosadmin
-ENV NAGIOSADMIN_PASS       nagios
-ENV APACHE_RUN_USER        nagios
-ENV APACHE_RUN_GROUP       nagios
-ENV APACHE_LOCK_DIR        /var/run
-ENV APACHE_LOG_DIR         /var/log/apache2
-ENV NAGIOS_TIMEZONE        UTC
+ARG NAGIOS_HOME=/opt/nagios
+ARG NAGIOS_USER=nagios
+ARG NAGIOS_GROUP=nagios
+ARG NAGIOS_CMDUSER=nagios
+ARG NAGIOS_CMDGROUP=nagios
+ARG NAGIOS_FQDN=nagios.example.com
+ARG NAGIOSADMIN_USER=nagiosadmin
+ARG NAGIOSADMIN_PASS=nagios
+ARG APACHE_RUN_USER=nagios
+ARG APACHE_RUN_GROUP=nagios
+ARG APACHE_LOCK_DIR=/var/run
+ARG APACHE_LOG_DIR=/var/log/apache2
+ARG NAGIOS_TIMEZONE=UTC
 
 # For Postfix build-time configuration
 ARG DEBIAN_FRONTEND=noninteractive
@@ -274,6 +274,23 @@ RUN echo "ServerName ${NAGIOS_FQDN}" > /etc/apache2/conf-available/servername.co
     echo "PassEnv TZ" > /etc/apache2/conf-available/timezone.conf            && \
     ln -s /etc/apache2/conf-available/servername.conf /etc/apache2/conf-enabled/servername.conf    && \
     ln -s /etc/apache2/conf-available/timezone.conf /etc/apache2/conf-enabled/timezone.conf
+
+# Copy the ARG variables into the runtime environment
+ENV NAGIOS_HOME=$NAGIOS_HOME \
+    NAGIOS_USER=$NAGIOS_USER \
+    NAGIOS_GROUP=$NAGIOS_GROUP \
+    NAGIOS_FQDN=$NAGIOS_FQDN \
+    NAGIOSADMIN_USER=$NAGIOSADMIN_USER \
+    NAGIOSADMIN_PASS=$NAGIOSADMIN_PASS \
+    APACHE_RUN_USER=$APACHE_RUN_USER \
+    APACHE_RUN_GROUP=$APACHE_RUN_GROUP \
+    APACHE_LOCK_DIR=$APACHE_LOCK_DIR \
+    APACHE_LOG_DIR=$APACHE_LOG_DIR \
+    NAGIOS_TIMEZONE=$NAGIOS_TIMEZONE
+
+# These are passed into the Postfix startup script
+#ENV MAIL_RELAY_HOST
+#ENV MAIL_INET_PROTOCOLS
 
 EXPOSE 80
 
