@@ -122,3 +122,7 @@ To change this:
 * Nagios Remote Plugin Executor (NRPE) [<https://github.com/NagiosEnterprises/nrpe>]
 * Nagios Service Check Acceptor (NSCA) [<https://github.com/NagiosEnterprises/nsca>]
 
+### Credits
+
+* This Docker image is based on the project at <https://github.com/JasonRivers/Docker-Nagios>
+* Some improvements came from the project <https://github.com/tronyx/Docker-Nagios>
