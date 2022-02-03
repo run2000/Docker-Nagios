@@ -48,7 +48,7 @@ Note: The path for the custom plugins will be /opt/nagios/custom-plugins, you wi
 
 There are a number of environment variables that you can use to adjust the behaviour of the container:
 
-| Environamne Variable | Description |
+| Environmant Variable | Description |
 |--------|--------|
 | MAIL_RELAY_HOST | Set Postfix relayhost |
 | MAIL_INET_PROTOCOLS | set the inet_protocols in postfix |
