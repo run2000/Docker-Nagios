@@ -38,6 +38,14 @@ docker build -t nagios .
 ```
 Additional build arguments may be passed into the Dockerfile. See the following sections.
 
+#### Operating System
+
+This argument specifies the Ubuntu base image on top of which the rest of the image is built. Change this at your own risk.
+
+| Build Arg | Default Value | Description |
+| ------- | ------- | ------ |
+| UBUNTU_VERSION | 20.04 | Ubuntu Focal LTS release image |
+
 #### Release versions
 
 These arguments configure the versions of each component that are fetched and installed.
