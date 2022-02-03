@@ -102,6 +102,7 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         php-cli                             \
         php-gd                              \
         postfix                             \
+        python2                             \
         python3-pip                         \
         python3-nagiosplugin                \
         rsyslog                             \
@@ -115,10 +116,14 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
                                                 && \
     apt-get clean && find /var/lib/apt/lists/ -maxdepth 1 -type f -delete
 
+# Create Nagios users and groups
+
 RUN ( egrep -i "^${NAGIOS_GROUP}"    /etc/group || groupadd $NAGIOS_GROUP    )                         && \
     ( egrep -i "^${NAGIOS_CMDGROUP}" /etc/group || groupadd $NAGIOS_CMDGROUP )
 RUN ( id -u $NAGIOS_USER    || useradd --system -d $NAGIOS_HOME -g $NAGIOS_GROUP    $NAGIOS_USER    )  && \
     ( id -u $NAGIOS_CMDUSER || useradd --system -d $NAGIOS_HOME -g $NAGIOS_CMDGROUP $NAGIOS_CMDUSER )
+
+# Pull and build Nagios Core
 
 RUN cd /tmp                                                                          && \
     git clone https://github.com/NagiosEnterprises/nagioscore.git -b $NAGIOS_BRANCH  && \
@@ -140,6 +145,8 @@ RUN cd /tmp                                                                     
     make clean                                                                       && \
     cd /tmp && rm -Rf nagioscore
 
+# Pull and build Nagios Plugins
+
 RUN cd /tmp                                                                                   && \
     git clone https://github.com/nagios-plugins/nagios-plugins.git -b $NAGIOS_PLUGINS_BRANCH  && \
     cd nagios-plugins                                                                         && \
@@ -156,8 +163,12 @@ RUN cd /tmp                                                                     
     ln -sf ${NAGIOS_HOME}/libexec/utils.pm /usr/lib/nagios/plugins                            && \
     cd /tmp && rm -Rf nagios-plugins
 
+# Pull NCPA
+
 RUN wget -O ${NAGIOS_HOME}/libexec/check_ncpa.py https://raw.githubusercontent.com/NagiosEnterprises/ncpa/${NCPA_BRANCH}/client/check_ncpa.py  && \
     chmod +x ${NAGIOS_HOME}/libexec/check_ncpa.py
+
+# Pull and build NRPE
 
 RUN cd /tmp                                                                  && \
     git clone https://github.com/NagiosEnterprises/nrpe.git -b $NRPE_BRANCH  && \
@@ -170,6 +181,8 @@ RUN cd /tmp                                                                  && 
     cp src/check_nrpe ${NAGIOS_HOME}/libexec/                                && \
     make clean                                                               && \
     cd /tmp && rm -Rf nrpe
+
+# Pull and build NSCA
 
 RUN cd /tmp                                                 && \
     git clone https://github.com/NagiosEnterprises/nsca.git && \
@@ -187,6 +200,8 @@ RUN cd /tmp                                                 && \
     sed -i 's/^#server_address.*/server_address=0.0.0.0/'  ${NAGIOS_HOME}/etc/nsca.cfg && \
     cd /tmp && rm -Rf nsca
 
+# Pull and build Nagiosgraph
+
 RUN cd /tmp                                                          && \
     git clone https://git.code.sf.net/p/nagiosgraph/git nagiosgraph  && \
     cd nagiosgraph                                                   && \
@@ -200,18 +215,27 @@ RUN cd /tmp                                                          && \
     cp share/nagiosgraph.ssi ${NAGIOS_HOME}/share/ssi/common-header.ssi && \
     cd /tmp && rm -Rf nagiosgraph
 
-RUN cd /opt                                                                         && \
-    pip install pymssql                                                             && \
-    git clone https://github.com/nagiosenterprises/check_mssql_collection.git   nagios-mssql  && \
-    cp /opt/nagios-mssql/check_mssql_database.py ${NAGIOS_HOME}/libexec/                         && \
-    cp /opt/nagios-mssql/check_mssql_server.py ${NAGIOS_HOME}/libexec/
+# Pull and install mssql checks
 
+RUN cd /tmp                                                                         && \
+    wget -q -O get-pip.py https://bootstrap.pypa.io/pip/2.7/get-pip.py && \
+    python2 get-pip.py && \
+    pip install --no-cache-dir "pymssql<2.2.0" && \
+
+    git clone https://github.com/nagiosenterprises/check_mssql_collection.git   nagios-mssql  && \
+    cp /tmp/nagios-mssql/check_mssql_database.py ${NAGIOS_HOME}/libexec/                      && \
+    cp /tmp/nagios-mssql/check_mssql_server.py ${NAGIOS_HOME}/libexec/                        && \
+    rm -Rf nagios-mssql
+
+# Basic configureation of Apache2
 
 RUN sed -i.bak 's/.*\=www\-data//g' /etc/apache2/envvars
 RUN export DOC_ROOT="DocumentRoot $(echo $NAGIOS_HOME/share)"                         && \
     sed -i "s,DocumentRoot.*,$DOC_ROOT," /etc/apache2/sites-enabled/000-default.conf  && \
     sed -i "s,</VirtualHost>,<IfDefine ENABLE_USR_LIB_CGI_BIN>\nScriptAlias /cgi-bin/ ${NAGIOS_HOME}/sbin/\n</IfDefine>\n</VirtualHost>," /etc/apache2/sites-enabled/000-default.conf  && \
     ln -s /etc/apache2/mods-available/cgi.load /etc/apache2/mods-enabled/cgi.load
+
+# Configuration of SNMP and MIB files
 
 RUN mkdir -p -m 0755 /usr/share/snmp/mibs                     && \
     mkdir -p         ${NAGIOS_HOME}/etc/conf.d                && \
@@ -226,17 +250,27 @@ RUN mkdir -p -m 0755 /usr/share/snmp/mibs                     && \
     download-mibs && echo "mibs +ALL" > /etc/snmp/snmp.conf   && \
     echo "mibdirs +${NAGIOS_HOME}/mibs" >> /etc/snmp/snmp.conf
 
+# Nagios configuration adjustments
+
 RUN sed -i 's,/bin/mail,/usr/bin/mail,' ${NAGIOS_HOME}/etc/objects/commands.cfg  && \
     sed -i 's,/usr/usr,/usr,'           ${NAGIOS_HOME}/etc/objects/commands.cfg
 
+# Mail configuration
+
 RUN cp /etc/services /var/spool/postfix/etc/  && \
     echo "smtp_address_preference = ipv4" >> /etc/postfix/main.cf
+
+RUN sed -i 's/ askcc//' /etc/mail.rc
+
+# Remove the current rsyslog config. This gets replaced by the overlay.
 
 RUN rm -rf /etc/rsyslog.d /etc/rsyslog.conf
 
 RUN rm -rf /etc/sv/getty-5
 
 ADD overlay /
+
+# Set up build-time timezone for Nagios
 
 RUN echo "use_timezone=${NAGIOS_TIMEZONE}" >> ${NAGIOS_HOME}/etc/nagios.cfg
 
@@ -247,11 +281,15 @@ RUN mkdir -p /orig/var                     && \
     cp -Rp ${NAGIOS_HOME}/var/* /orig/var/ && \
     cp -Rp ${NAGIOS_HOME}/etc/* /orig/etc/ 
 
+# Enable Apache modules
+
 RUN a2enmod session         && \
     a2enmod session_cookie  && \
     a2enmod session_crypto  && \
     a2enmod auth_form       && \
     a2enmod request
+
+# Make our startup files executable
 
 RUN chmod +x /usr/local/bin/start_nagios        && \
     chmod +x /etc/sv/apache/run                 && \
@@ -260,17 +298,18 @@ RUN chmod +x /usr/local/bin/start_nagios        && \
     chmod +x /etc/sv/rsyslog/run                 && \
     chmod +x /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
 
+# Patch Nagiosgraph
+
 RUN cd /opt/nagiosgraph/etc && \
     sh fix-nagiosgraph-multiple-selection.sh
 
 RUN rm /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
 
-RUN sed -i 's/ askcc//' /etc/mail.rc
-
 # enable all runit services
 RUN ln -s /etc/sv/* /etc/service
 
-#Set ServerName and timezone for Apache
+#Set ServerName and timezone for Apache with build-time configuration
+
 RUN echo "ServerName ${NAGIOS_FQDN}" > /etc/apache2/conf-available/servername.conf    && \
     echo "PassEnv TZ" > /etc/apache2/conf-available/timezone.conf            && \
     ln -s /etc/apache2/conf-available/servername.conf /etc/apache2/conf-enabled/servername.conf    && \
@@ -294,6 +333,8 @@ ENV NAGIOS_HOME=$NAGIOS_HOME \
 #ENV MAIL_INET_PROTOCOLS
 
 EXPOSE 80
+
+HEALTHCHECK --start-period=10s --interval=60s --timeout=5s CMD /usr/local/bin/nagios -v ${NAGIOS_HOME}/etc/nagios.cfg
 
 VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "${NAGIOS_HOME}/custom-plugins" "${NAGIOSGRAPH_HOME}/var" "${NAGIOSGRAPH_HOME}/etc" "${NAGIOS_HOME}/mibs"
 

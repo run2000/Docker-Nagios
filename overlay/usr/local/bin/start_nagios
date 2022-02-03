@@ -19,6 +19,8 @@ if [ ! -f "${NAGIOS_HOME}/etc/htpasswd.users" ] ; then
   chown -R ${NAGIOS_USER}.${NAGIOS_GROUP} "${NAGIOS_HOME}/etc/htpasswd.users"
 fi
 
+sed -i "s|^use_timezone\\s*=.*|use_timezone=${NAGIOS_TIMEZONE}|g" ${NAGIOS_HOME}/etc/nagios.cfg
+
 shutdown() {
   echo Shutting Down
   ls /etc/service | SHELL=/bin/sh parallel --no-notice sv force-stop {}
