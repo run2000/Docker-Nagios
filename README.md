@@ -14,14 +14,52 @@ Nagios Core 4.4.6 running on Ubuntu 20.04 LTS with NagiosGraph, NRPE, NCPA, and 
 
 
 ### Configurations
-Nagios Configuration lives in /opt/nagios/etc
-NagiosGraph configuration lives in /opt/nagiosgraph/etc
+
+* Nagios configuration lives in /opt/nagios/etc
+  * Custom plugins live in /opt/nagios/custom-plugins
+  * MIB files live in /opt/nagios/mibs
+* NagiosGraph configuration lives in /opt/nagiosgraph/etc
 
 ### Install
+
+Download the default image from Docker Hub by running:
 
 ```sh
 docker pull run2000/nagios:latest
 ```
+
+Alternatively, you can build the image from GitHub:
+
+```sh
+git clone https://github.com/run2000/Docker-Nagios.git 
+
+cd Docker-Nagios
+docker build -t nagios .
+```
+Additional build arguments may be passed into the Dockerfile. See the following sections.
+
+#### Release versions
+
+These arguments configure the versions of each component that are fetched and installed.
+
+| Build Arg | Default Value | Description |
+| ------- | ------- | ------ |
+| NAGIOS_VER | 4.4.6 | The Nagios Core release version |
+| NAGIOS_PLUGINS_VER | 2.4.0 | The Nagios Core release version |
+| NRPE_VER | 4.0.3 | The NRPE release version |
+| NCPA_VER | 2.4.0 | The NRPE release version |
+| NSCA_VER | 2.10.1 | The NSCA release version |
+
+#### Default environment
+
+These arguments configure default Nagios behaviour. They can be overridden by environment variables when starting the container.
+
+| Build Arg | Default Value | Description |
+| ------- | ------- | ------ |
+| NAGIOS_FQDN | nagios.example.com | The server Fully Qualified Domain Name in Postfix |
+| NAGIOS_TIMEZONE | UTC | The timezone of the server |
+| NAGIOSADMIN_USER | nagiosadmin | The admin user name for the web interface |
+| NAGIOSADMIN_PASS | nagios | The admin password for the web interface |
 
 ### Running
 
@@ -75,5 +113,4 @@ To change this:
 * Nagios Cross-Platform Agent (NCPA) [<https://github.com/NagiosEnterprises/ncpa>]
 * Nagios Remote Plugin Executor (NRPE) [<https://github.com/NagiosEnterprises/nrpe>]
 * Nagios Service Check Acceptor (NSCA) [<https://github.com/NagiosEnterprises/nsca>]
-
 
