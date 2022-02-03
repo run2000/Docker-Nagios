@@ -97,11 +97,11 @@ There are a number of environment variables that you can use to adjust the behav
 | Environment Variable | Description |
 |--------|--------|
 | MAIL_RELAY_HOST | Set Postfix relayhost |
-| MAIL_INET_PROTOCOLS | set the inet_protocols in postfix |
-| NAGIOS_FQDN | set the server Fully Qualified Domain Name in postfix |
-| NAGIOS_TIMEZONE | set the timezone of the server |
-| NAGIOSADMIN_USER | set the admin user name for the web interface |
-| NAGIOSADMIN_PASS | set the admin password for the web interface |
+| MAIL_INET_PROTOCOLS | Set the inet_protocols in Postfix |
+| NAGIOS_FQDN | Set the server Fully Qualified Domain Name in Postfix |
+| NAGIOS_TIMEZONE | Set the timezone of the server |
+| NAGIOSADMIN_USER | Set the admin user name for the web interface |
+| NAGIOSADMIN_PASS | Set the admin password for the web interface |
 
 For best results your Nagios image should have access to both IPv4 & IPv6 networks 
 
