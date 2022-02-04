@@ -36,7 +36,7 @@ git clone https://github.com/run2000/Docker-Nagios.git
 cd Docker-Nagios
 docker build -t nagios .
 ```
-Additional build arguments may be passed into the Dockerfile. See the following sections.
+Additional build arguments may be passed into the Dockerfile at build time. The following sections describe these.
 
 #### Operating System
 
