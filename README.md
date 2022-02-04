@@ -55,7 +55,7 @@ These arguments configure the versions of each component that are fetched and in
 | NAGIOS_VER | 4.4.6 | The Nagios Core release version |
 | NAGIOS_PLUGINS_VER | 2.4.0 | The Nagios Core release version |
 | NRPE_VER | 4.0.3 | The NRPE release version |
-| NCPA_VER | 2.4.0 | The NRPE release version |
+| NCPA_VER | 2.4.0 | The NCPA release version |
 | NSCA_VER | 2.10.1 | The NSCA release version |
 
 #### Default environment
