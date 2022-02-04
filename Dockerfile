@@ -163,7 +163,7 @@ RUN cd /tmp                                                                     
     ln -sf ${NAGIOS_HOME}/libexec/utils.pm /usr/lib/nagios/plugins                            && \
     cd /tmp && rm -Rf nagios-plugins
 
-# Pull NCPA
+# Pull and install NCPA client
 
 RUN wget -O ${NAGIOS_HOME}/libexec/check_ncpa.py https://raw.githubusercontent.com/NagiosEnterprises/ncpa/${NCPA_BRANCH}/client/check_ncpa.py  && \
     chmod +x ${NAGIOS_HOME}/libexec/check_ncpa.py
@@ -173,9 +173,9 @@ RUN wget -O ${NAGIOS_HOME}/libexec/check_ncpa.py https://raw.githubusercontent.c
 RUN cd /tmp                                                                  && \
     git clone https://github.com/NagiosEnterprises/nrpe.git -b $NRPE_BRANCH  && \
     cd nrpe                                                                  && \
-    ./configure                                   \
-        --with-ssl=/usr/bin/openssl               \
-        --with-ssl-lib=/usr/lib/x86_64-linux-gnu  \
+    ./configure                                        \
+        --with-ssl=/usr/bin/openssl                    \
+        --with-ssl-lib=/usr/lib/$(uname -m)-linux-gnu  \
                                                                              && \
     make check_nrpe                                                          && \
     cp src/check_nrpe ${NAGIOS_HOME}/libexec/                                && \
@@ -334,7 +334,7 @@ ENV NAGIOS_HOME=$NAGIOS_HOME \
 
 EXPOSE 80
 
-HEALTHCHECK --start-period=10s --interval=60s --timeout=5s CMD /usr/local/bin/nagios -v ${NAGIOS_HOME}/etc/nagios.cfg
+HEALTHCHECK --interval=120s --timeout=5s CMD /usr/local/bin/nagios -v ${NAGIOS_HOME}/etc/nagios.cfg
 
 VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "${NAGIOS_HOME}/custom-plugins" "${NAGIOSGRAPH_HOME}/var" "${NAGIOSGRAPH_HOME}/etc" "${NAGIOS_HOME}/mibs"
 
