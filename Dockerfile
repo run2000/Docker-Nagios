@@ -86,7 +86,6 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         libmysqlclient-dev                  \
         libnagios-object-perl               \
         libnet-snmp-perl                    \
-        libnet-snmp-perl                    \
         libnet-tftp-perl                    \
         libnet-xmpp-perl                    \
         libpq-dev                           \
@@ -102,7 +101,6 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         php-cli                             \
         php-gd                              \
         postfix                             \
-        python2                             \
         python3-pip                         \
         python3-nagiosplugin                \
         rsyslog                             \
@@ -188,6 +186,7 @@ RUN cd /tmp                                                 && \
     git clone https://github.com/NagiosEnterprises/nsca.git && \
     cd nsca                                                 && \
     git checkout $NSCA_TAG                                  && \
+    cp /usr/share/misc/config.* .                           && \
     ./configure                                                \
         --prefix=${NAGIOS_HOME}                                \
         --with-nsca-user=${NAGIOS_USER}                        \
@@ -214,18 +213,6 @@ RUN cd /tmp                                                          && \
                                                                      && \
     cp share/nagiosgraph.ssi ${NAGIOS_HOME}/share/ssi/common-header.ssi && \
     cd /tmp && rm -Rf nagiosgraph
-
-# Pull and install mssql checks
-
-RUN cd /tmp                                                                         && \
-    wget -q -O get-pip.py https://bootstrap.pypa.io/pip/2.7/get-pip.py && \
-    python2 get-pip.py && \
-    pip install --no-cache-dir "pymssql<2.2.0" && \
-
-    git clone https://github.com/nagiosenterprises/check_mssql_collection.git   nagios-mssql  && \
-    cp /tmp/nagios-mssql/check_mssql_database.py ${NAGIOS_HOME}/libexec/                      && \
-    cp /tmp/nagios-mssql/check_mssql_server.py ${NAGIOS_HOME}/libexec/                        && \
-    rm -Rf nagios-mssql
 
 # Basic configureation of Apache2
 
@@ -304,6 +291,12 @@ RUN cd /opt/nagiosgraph/etc && \
     sh fix-nagiosgraph-multiple-selection.sh
 
 RUN rm /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
+
+
+# Copy Nagiosgraph config in-case the user has started with empty etc
+
+RUN mkdir -p /orig/nagiosgraph-etc           && \
+    cp -Rp ${NAGIOSGRAPH_HOME}/etc/* /orig/nagiosgraph-etc/
 
 # enable all runit services
 RUN ln -s /etc/sv/* /etc/service
