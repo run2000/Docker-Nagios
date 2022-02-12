@@ -9,6 +9,7 @@ ARG NAGIOS_PLUGINS_VER=2.4.0
 ARG NRPE_VER=4.0.3
 ARG NCPA_VER=2.4.0
 ARG NSCA_VER=2.10.1
+ARG NRDP_VER=2.0.5
 
 LABEL name="Nagios" \
     nagiosVersion=$NAGIOS_VER \
@@ -16,6 +17,7 @@ LABEL name="Nagios" \
     nrpeVersion=$NRPE_VER \
     nscaVersion=$NSCA_VER \
     ncpaVersion=$NCPA_VER \
+    nrpdVersion=$NRDP_VER \
     homepage="https://www.nagios.com/" \
     maintainer="NicholasC <run2000@gmail.com>"
 
@@ -23,6 +25,8 @@ LABEL name="Nagios" \
 
 ARG NAGIOS_HOME=/opt/nagios
 ARG NAGIOSGRAPH_HOME=/opt/nagiosgraph
+ARG NRDP_HOME=/opt/nrdp
+ARG NRDP_TOKEN
 ARG NAGIOS_USER=nagios
 ARG NAGIOS_GROUP=nagios
 ARG NAGIOS_CMDUSER=nagios
@@ -51,6 +55,7 @@ ARG NAGIOS_PLUGINS_BRANCH="release-${NAGIOS_PLUGINS_VER}"
 ARG NRPE_BRANCH="nrpe-${NRPE_VER}"
 ARG NCPA_BRANCH="v${NCPA_VER}"
 ARG NSCA_TAG="nsca-${NSCA_VER}"
+ARG NRDP_TAG=${NRDP_VER}
 
 
 RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set-selections  && \
@@ -100,6 +105,7 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         parallel                            \
         php-cli                             \
         php-gd                              \
+        php-xml                             \
         postfix                             \
         python3-pip                         \
         python3-nagiosplugin                \
@@ -199,6 +205,27 @@ RUN cd /tmp                                                 && \
     sed -i 's/^#server_address.*/server_address=0.0.0.0/'  ${NAGIOS_HOME}/etc/nsca.cfg && \
     cd /tmp && rm -Rf nsca
 
+# Download and configure NRDP
+
+RUN cd /tmp && \
+  git clone https://github.com/NagiosEnterprises/nrdp.git -b ${NRDP_TAG} && \
+  chown -R ${NAGIOS_USER}:${NAGIOS_GROUP} nrdp && \
+  cp nrdp/nrdp.conf /etc/apache2/sites-available/nrdp.conf && \
+  ln -sf /etc/apache2/sites-available/nrdp.conf /etc/apache2/sites-enabled/nrdp.conf && \
+  sed -i "s|/usr/local/nrdp|${NRDP_HOME}|g" /etc/apache2/sites-available/nrdp.conf && \
+  mkdir -p ${NRDP_HOME} && \
+  cp -a /tmp/nrdp/server ${NRDP_HOME} && \
+  sed -i "s|/usr/local/nrdp|${NRDP_HOME}|g" ${NRDP_HOME}/server/config.inc.php && \
+  sed -i "s|/usr/local/nagios|${NAGIOS_HOME}|g" ${NRDP_HOME}/server/config.inc.php  && \
+  sed -i "s|\\[\"nagios_command_group\"\\]\\s*=.*|[\"nagios_command_group\"] = \"${NAGIOS_CMDGROUP}\";|g" ${NRDP_HOME}/server/config.inc.php && \
+  sed -i "s|/usr/local/nrdp|${NRDP_HOME}|g" ${NRDP_HOME}/server/includes/utils.inc.php && \
+  sed -i "s|/usr/local/nagiosxi/html|${NAGIOS_HOME}/share|g" ${NRDP_HOME}/server/plugins/nagioscorepassivecheck/nagioscorepassivecheck.inc.php && \
+  sed -i "s|/usr/local/nagiosxi|${NAGIOS_HOME}|g" ${NRDP_HOME}/server/plugins/nagioscorepassivecheck/nagioscorepassivecheck.inc.php && \
+  sed -i "s|/usr/local/nagios|${NAGIOS_HOME}|g" ${NRDP_HOME}/server/plugins/nagioscorepassivecheck/nagioscorepassivecheck.inc.php && \
+  cd /tmp && rm -Rf nrdp
+
+RUN if ! [ "${NRDP_TOKEN}" = "" ]; then sed -i "s|//\s*\"mysecrettoken\".*|\"${NRDP_TOKEN}\",|g" ${NRDP_HOME}/server/config.inc.php ; fi
+
 # Pull and build Nagiosgraph
 
 RUN cd /tmp                                                          && \
@@ -296,7 +323,9 @@ RUN rm /opt/nagiosgraph/etc/fix-nagiosgraph-multiple-selection.sh
 # Copy Nagiosgraph config in-case the user has started with empty etc
 
 RUN mkdir -p /orig/nagiosgraph-etc           && \
-    cp -Rp ${NAGIOSGRAPH_HOME}/etc/* /orig/nagiosgraph-etc/
+    cp -Rp ${NAGIOSGRAPH_HOME}/etc/* /orig/nagiosgraph-etc/ && \
+    mkdir -p /orig/nrdp-server               && \
+    cp -Rp ${NRDP_HOME}/server/* /orig/nrdp-server/
 
 # enable all runit services
 RUN ln -s /etc/sv/* /etc/service
@@ -329,6 +358,6 @@ EXPOSE 80
 
 HEALTHCHECK --interval=120s --timeout=5s CMD /usr/local/bin/nagios -v ${NAGIOS_HOME}/etc/nagios.cfg
 
-VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "${NAGIOS_HOME}/custom-plugins" "${NAGIOSGRAPH_HOME}/var" "${NAGIOSGRAPH_HOME}/etc" "${NAGIOS_HOME}/mibs"
+VOLUME "${NAGIOS_HOME}/var" "${NAGIOS_HOME}/etc" "/var/log/apache2" "${NAGIOS_HOME}/custom-plugins" "${NAGIOSGRAPH_HOME}/var" "${NAGIOSGRAPH_HOME}/etc" "${NAGIOS_HOME}/mibs" "${NRDP_HOME}/server"
 
 CMD [ "/usr/local/bin/start_nagios" ]

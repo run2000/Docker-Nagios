@@ -19,6 +19,11 @@ if [ -z "$(ls -A /opt/nagiosgraph/etc)" ]; then
     cp -Rp /orig/nagiosgraph-etc/* /opt/nagiosgraph/etc/
 fi
 
+if [ -z "$(ls -A /opt/nrdp/server)" ]; then
+    echo "Started with empty NRDP Server, copying config data in-place"
+    cp -Rp /orig/nrdp-server/* /opt/nrdp/server/
+fi
+
 if [ ! -f "${NAGIOS_HOME}/etc/htpasswd.users" ] ; then
   htpasswd -c -b -s "${NAGIOS_HOME}/etc/htpasswd.users" "${NAGIOSADMIN_USER}" "${NAGIOSADMIN_PASS}"
   chown -R ${NAGIOS_USER}.${NAGIOS_GROUP} "${NAGIOS_HOME}/etc/htpasswd.users"
