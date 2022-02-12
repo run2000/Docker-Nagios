@@ -27,6 +27,7 @@ ARG NAGIOS_HOME=/opt/nagios
 ARG NAGIOSGRAPH_HOME=/opt/nagiosgraph
 ARG NRDP_HOME=/opt/nrdp
 ARG NRDP_TOKEN
+ARG NRDP_ENABLED=1
 ARG NAGIOS_USER=nagios
 ARG NAGIOS_GROUP=nagios
 ARG NAGIOS_CMDUSER=nagios
@@ -211,7 +212,6 @@ RUN cd /tmp && \
   git clone https://github.com/NagiosEnterprises/nrdp.git -b ${NRDP_TAG} && \
   chown -R ${NAGIOS_USER}:${NAGIOS_GROUP} nrdp && \
   cp nrdp/nrdp.conf /etc/apache2/sites-available/nrdp.conf && \
-  ln -sf /etc/apache2/sites-available/nrdp.conf /etc/apache2/sites-enabled/nrdp.conf && \
   sed -i "s|/usr/local/nrdp|${NRDP_HOME}|g" /etc/apache2/sites-available/nrdp.conf && \
   mkdir -p ${NRDP_HOME} && \
   cp -a /tmp/nrdp/server ${NRDP_HOME} && \
@@ -224,7 +224,11 @@ RUN cd /tmp && \
   sed -i "s|/usr/local/nagios|${NAGIOS_HOME}|g" ${NRDP_HOME}/server/plugins/nagioscorepassivecheck/nagioscorepassivecheck.inc.php && \
   cd /tmp && rm -Rf nrdp
 
-RUN if ! [ "${NRDP_TOKEN}" = "" ]; then sed -i "s|//\s*\"mysecrettoken\".*|\"${NRDP_TOKEN}\",|g" ${NRDP_HOME}/server/config.inc.php ; fi
+# NRDP is enabled with the nrdp.conf file in Apache
+# If a token is present as a build arg, configure it
+
+RUN if [ "${NRDP_ENABLED}" = "1" ] ; then ln -sf /etc/apache2/sites-available/nrdp.conf /etc/apache2/sites-enabled/nrdp.conf ; fi ; \
+    if ! [ "${NRDP_TOKEN}" = "" ] ; then sed -i "s|//\s*\"mysecrettoken\".*|\"${NRDP_TOKEN}\",|g" ${NRDP_HOME}/server/config.inc.php ; fi
 
 # Pull and build Nagiosgraph
 

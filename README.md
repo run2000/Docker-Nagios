@@ -2,7 +2,7 @@
 
 Docker image for Nagios
 
-Nagios Core 4.4.6 running on Ubuntu 20.04 LTS with NagiosGraph, NRPE, NCPA, and NSCA.
+Nagios Core 4.4.6 running on Ubuntu 20.04 LTS with NagiosGraph, NRPE, NCPA, NSCA, and NRDP.
 
 | Product | Version |
 | ------- | ------- |
@@ -11,6 +11,7 @@ Nagios Core 4.4.6 running on Ubuntu 20.04 LTS with NagiosGraph, NRPE, NCPA, and 
 | NRPE | 4.0.3 |
 | NCPA | 2.4.0 |
 | NSCA | 2.10.1 |
+| NRDP | 2.0.5 |
 
 
 ### Configurations
@@ -19,6 +20,7 @@ Nagios Core 4.4.6 running on Ubuntu 20.04 LTS with NagiosGraph, NRPE, NCPA, and 
   * Custom plugins live in /opt/nagios/custom-plugins
   * MIB files live in /opt/nagios/mibs
 * NagiosGraph configuration lives in /opt/nagiosgraph/etc
+* NRDP server configuration lives in /opt/nrdp/server
 
 ### Install
 
@@ -40,7 +42,7 @@ Additional build arguments may be passed into the Dockerfile at build time. The 
 
 #### Operating System
 
-This argument specifies the Ubuntu base image on top of which the rest of the image is built. Change this at your own risk.
+This build argument specifies the Ubuntu base image on top of which the rest of the image is built. Change this at your own risk.
 
 | Build Arg | Default Value | Description |
 | ------- | ------- | ------ |
@@ -48,7 +50,7 @@ This argument specifies the Ubuntu base image on top of which the rest of the im
 
 #### Release versions
 
-These arguments configure the versions of each component that are fetched and installed.
+These build arguments configure the versions of each component that are fetched and installed.
 
 | Build Arg | Default Value | Description |
 | ------- | ------- | ------ |
@@ -57,10 +59,11 @@ These arguments configure the versions of each component that are fetched and in
 | NRPE_VER | 4.0.3 | The NRPE release version |
 | NCPA_VER | 2.4.0 | The NCPA release version |
 | NSCA_VER | 2.10.1 | The NSCA release version |
+| NRDP_VER | 2.0.5 | The NRDP release version |
 
 #### Default environment
 
-These arguments configure default Nagios behaviour. They can be overridden by environment variables when starting the container.
+These build arguments configure default Nagios behaviour. They can be overridden by environment variables when starting the container.
 
 | Build Arg | Default Value | Description |
 | ------- | ------- | ------ |
@@ -68,6 +71,20 @@ These arguments configure default Nagios behaviour. They can be overridden by en
 | NAGIOS_TIMEZONE | UTC | The timezone of the server |
 | NAGIOSADMIN_USER | nagiosadmin | The admin user name for the web interface |
 | NAGIOSADMIN_PASS | nagios | The admin password for the web interface |
+
+#### NRDP configuration
+
+These build arguments configure the default NRDP behaviour.
+
+| Build Arg | Default Value | Description |
+| ------- | ------- | ------ |
+| NRDP_ENABLED | 1 | Enable NRDP through the Apache 2 configuration. |
+| NRDP_TOKEN | | A token that may be used for NRDP requests. |
+
+NRDP may be disabled by setting NRDP_ENABLED to any other value.
+
+If NRDP_TOKEN is unspecified, no tokens will be configured.
+
 
 ### Running
 
@@ -87,6 +104,7 @@ docker run --name nagios4  \
   -v /path-to-custom-mib-files:/opt/nagios/mibs \
   -v /path-to-nagiosgraph-var:/opt/nagiosgraph/var \
   -v /path-to-nagiosgraph-etc:/opt/nagiosgraph/etc \
+  -v /path-to-nrdp-server:/opt/nrdp/server \
   -p 0.0.0.0:8080:80 run2000/nagios:latest
 ```
 
@@ -121,6 +139,7 @@ To change this:
 * Nagios Cross-Platform Agent (NCPA) [<https://github.com/NagiosEnterprises/ncpa>]
 * Nagios Remote Plugin Executor (NRPE) [<https://github.com/NagiosEnterprises/nrpe>]
 * Nagios Service Check Acceptor (NSCA) [<https://github.com/NagiosEnterprises/nsca>]
+* Nagios Remote Data Processor (NRDP) [<https://github.com/NagiosEnterprises/nrdp>]
 
 ### Credits
 
