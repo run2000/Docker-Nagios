@@ -17,7 +17,7 @@ LABEL name="Nagios" \
     nrpeVersion=$NRPE_VER \
     nscaVersion=$NSCA_VER \
     ncpaVersion=$NCPA_VER \
-    nrpdVersion=$NRDP_VER \
+    nrdpVersion=$NRDP_VER \
     homepage="https://www.nagios.com/" \
     maintainer="NicholasC <run2000@gmail.com>"
 
