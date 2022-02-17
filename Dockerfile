@@ -83,6 +83,9 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         libdbd-mysql-perl                   \
         libdbi-dev                          \
         libdbi-perl                         \
+        libcrypt-des-perl                   \
+        libcrypt-rijndael-perl              \
+        libdigest-hmac-perl                 \
         libfreeradius-dev                   \
         libgdchart-gd2-xpm-dev              \
         libgd-gd2-perl                      \
