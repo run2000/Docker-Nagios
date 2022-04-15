@@ -70,7 +70,6 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         bc                                  \
         bsd-mailx                           \
         build-essential                     \
-        ca-certificates                     \
         dnsutils                            \
         fping                               \
         gettext                             \
@@ -99,7 +98,6 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         libnet-tftp-perl                    \
         libnet-xmpp-perl                    \
         libpq-dev                           \
-        libpython3-dev                      \
         libradsec-dev                       \
         libredis-perl                       \
         librrds-perl                        \
@@ -132,9 +130,6 @@ RUN ( egrep -i "^${NAGIOS_GROUP}"    /etc/group || groupadd $NAGIOS_GROUP    )  
     ( egrep -i "^${NAGIOS_CMDGROUP}" /etc/group || groupadd $NAGIOS_CMDGROUP )
 RUN ( id -u $NAGIOS_USER    || useradd --system -d $NAGIOS_HOME -g $NAGIOS_GROUP    $NAGIOS_USER    )  && \
     ( id -u $NAGIOS_CMDUSER || useradd --system -d $NAGIOS_HOME -g $NAGIOS_CMDGROUP $NAGIOS_CMDUSER )
-
-# Update SSL certificates
-RUN update-ca-certificates -f
 
 # Pull and build Nagios Core
 
@@ -186,7 +181,10 @@ RUN wget -O ${NAGIOS_HOME}/libexec/check_ncpa.py https://raw.githubusercontent.c
 RUN cd /tmp                                                                  && \
     git clone https://github.com/NagiosEnterprises/nrpe.git -b $NRPE_BRANCH  && \
     cd nrpe                                                                  && \
-    ./configure                                                              && \
+    ./configure                                        \
+        --with-ssl=/usr/bin/openssl                    \
+        --with-ssl-lib=/usr/lib/$(uname -m)-linux-gnu  \
+                                                                             && \
     make check_nrpe                                                          && \
     cp src/check_nrpe ${NAGIOS_HOME}/libexec/                                && \
     make clean                                                               && \
