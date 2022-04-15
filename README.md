@@ -2,11 +2,11 @@
 
 Docker image for Nagios
 
-Nagios Core 4.4.6 running on Ubuntu 20.04 LTS with NagiosGraph, NRPE, NCPA, NSCA, and NRDP.
+Nagios Core 4.4.7 running on Ubuntu 20.04 LTS with NagiosGraph, NRPE, NCPA, NSCA, and NRDP.
 
 | Product | Version |
 | ------- | ------- |
-| Nagios Core | 4.4.6 |
+| Nagios Core | 4.4.7 |
 | Nagios Plugins | 2.4.0 |
 | NRPE | 4.0.3 |
 | NCPA | 2.4.0 |
@@ -54,7 +54,7 @@ These build arguments configure the versions of each component that are fetched 
 
 | Build Arg | Default Value | Description |
 | ------- | ------- | ------ |
-| NAGIOS_VER | 4.4.6 | The Nagios Core release version |
+| NAGIOS_VER | 4.4.7 | The Nagios Core release version |
 | NAGIOS_PLUGINS_VER | 2.4.0 | The Nagios Core release version |
 | NRPE_VER | 4.0.3 | The NRPE release version |
 | NCPA_VER | 2.4.0 | The NCPA release version |
