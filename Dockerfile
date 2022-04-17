@@ -139,6 +139,7 @@ RUN cd /tmp                                                                     
     ./configure                                  \
         --prefix=${NAGIOS_HOME}                  \
         --exec-prefix=${NAGIOS_HOME}             \
+        --disable-ssl                            \
         --enable-event-broker                    \
         --with-command-user=${NAGIOS_CMDUSER}    \
         --with-command-group=${NAGIOS_CMDGROUP}  \
@@ -182,8 +183,6 @@ RUN cd /tmp                                                                  && 
     git clone https://github.com/NagiosEnterprises/nrpe.git -b $NRPE_BRANCH  && \
     cd nrpe                                                                  && \
     ./configure                                        \
-        --with-ssl=/usr/bin/openssl                    \
-        --with-ssl-lib=/usr/lib/$(uname -m)-linux-gnu  \
                                                                              && \
     make check_nrpe                                                          && \
     cp src/check_nrpe ${NAGIOS_HOME}/libexec/                                && \
