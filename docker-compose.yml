@@ -17,6 +17,8 @@ services:
     - custommibfiles:/opt/nagios/mibs
     - nagiosgraphvar:/opt/nagiosgraph/var
     - nagiosgraphetc:/opt/nagiosgraph/etc
+    - apache2log:/var/log/apache2
+    - nrdpserver:/opt/nrdp/server
 
 volumes:
     nagiosetc:
@@ -25,3 +27,5 @@ volumes:
     custommibfiles:
     nagiosgraphvar:
     nagiosgraphetc:
+    apache2log:
+    nrdpserver:

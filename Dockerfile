@@ -4,11 +4,11 @@ FROM ubuntu:$UBUNTU_VERSION
 
 # Arguments for the LABELs and the branches defined later
 
-ARG NAGIOS_VER=4.4.7
+ARG NAGIOS_VER=4.4.8
 ARG NAGIOS_PLUGINS_VER=2.4.0
-ARG NRPE_VER=4.0.3
+ARG NRPE_VER=4.1.0
 ARG NCPA_VER=2.4.0
-ARG NSCA_VER=2.10.1
+ARG NSCA_VER=2.10.2
 ARG NRDP_VER=2.0.5
 
 LABEL name="Nagios" \
@@ -139,7 +139,6 @@ RUN cd /tmp                                                                     
     ./configure                                  \
         --prefix=${NAGIOS_HOME}                  \
         --exec-prefix=${NAGIOS_HOME}             \
-        --disable-ssl                            \
         --enable-event-broker                    \
         --with-command-user=${NAGIOS_CMDUSER}    \
         --with-command-group=${NAGIOS_CMDGROUP}  \
