@@ -9,7 +9,7 @@ Nagios Core 4.5.1 running on Ubuntu 20.04 LTS with NagiosGraph, NRPE, NCPA, NSCA
 | Nagios Core | 4.5.1 |
 | Nagios Plugins | 2.4.6 |
 | NRPE | 4.1.0 |
-| NCPA | 2.4.1 |
+| NCPA | 3.0.1 |
 | NSCA | 2.10.2 |
 | NRDP | 2.0.5 |
 
@@ -57,7 +57,7 @@ These build arguments configure the versions of each component that are fetched 
 | NAGIOS_VER | 4.5.1 | The Nagios Core release version |
 | NAGIOS_PLUGINS_VER | 2.4.6 | The Nagios Plugins release version |
 | NRPE_VER | 4.1.0 | The NRPE release version |
-| NCPA_VER | 2.4.1 | The NCPA release version |
+| NCPA_VER | 3.0.1 | The NCPA release version |
 | NSCA_VER | 2.10.2 | The NSCA release version |
 | NRDP_VER | 2.0.5 | The NRDP release version |
 
