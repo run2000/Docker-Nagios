@@ -4,7 +4,7 @@ FROM ubuntu:$UBUNTU_VERSION
 
 # Arguments for the LABELs and the branches defined later
 
-ARG NAGIOS_VER=4.5.5
+ARG NAGIOS_VER=4.5.6
 ARG NAGIOS_PLUGINS_VER=2.4.12
 ARG NRPE_VER=4.1.1
 ARG NCPA_VER=3.1.1
