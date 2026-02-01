@@ -1,13 +1,13 @@
-ARG  UBUNTU_VERSION=20.04
+ARG UBUNTU_VERSION=24.04
 
 FROM ubuntu:$UBUNTU_VERSION
 
 # Arguments for the LABELs and the branches defined later
 
-ARG NAGIOS_VER=4.5.9
+ARG NAGIOS_VER=4.5.11
 ARG NAGIOS_PLUGINS_VER=2.4.12
 ARG NRPE_VER=4.1.3
-ARG NCPA_VER=3.1.1
+ARG NCPA_VER=3.2.2
 ARG NSCA_VER=2.10.3
 ARG NRDP_VER=2.0.6
 
@@ -80,11 +80,13 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         libapache2-mod-php                  \
         libcache-memcached-perl             \
         libcgi-pm-perl                      \
-        libdbd-mysql-perl                   \
-        libdbi-dev                          \
-        libdbi-perl                         \
         libcrypt-des-perl                   \
         libcrypt-rijndael-perl              \
+        libcrypt-x509-perl                  \
+        libdbd-mysql-perl                   \
+        libdbd-pg-perl                      \
+        libdbi-dev                          \
+        libdbi-perl                         \
         libdigest-hmac-perl                 \
         libfreeradius-dev                   \
         libgdchart-gd2-xpm-dev              \
@@ -92,7 +94,8 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         libjson-perl                        \
         libldap2-dev                        \
         libmonitoring-plugin-perl           \
-        libmysqlclient-dev                  \
+        libmariadb-dev                      \
+        libmcrypt-dev                       \
         libnagios-object-perl               \
         libnet-snmp-perl                    \
         libnet-tftp-perl                    \
@@ -103,14 +106,16 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         librrds-perl                        \
         libssl-dev                          \
         libswitch-perl                      \
+        libtext-glob-perl                   \
         libwww-perl                         \
         m4                                  \
-        netcat                              \
+        netcat-traditional                  \
         parallel                            \
         php-cli                             \
         php-gd                              \
         php-xml                             \
         postfix                             \
+        python3                             \
         python3-pip                         \
         python3-nagiosplugin                \
         rsyslog                             \
@@ -120,7 +125,6 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         snmpd                               \
         snmp-mibs-downloader                \
         unzip                               \
-        python                              \
                                                 && \
     apt-get clean && find /var/lib/apt/lists/ -maxdepth 1 -type f -delete
 
