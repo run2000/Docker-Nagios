@@ -84,7 +84,6 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         libcrypt-rijndael-perl              \
         libcrypt-x509-perl                  \
         libdbd-mysql-perl                   \
-        libdbd-pg-perl                      \
         libdbi-dev                          \
         libdbi-perl                         \
         libdigest-hmac-perl                 \
@@ -93,9 +92,9 @@ RUN echo postfix postfix/main_mailer_type string "'Internet Site'" | debconf-set
         libgd-gd2-perl                      \
         libjson-perl                        \
         libldap2-dev                        \
-        libmonitoring-plugin-perl           \
-        libmariadb-dev                      \
+        libmariadb-dev-compat               \
         libmcrypt-dev                       \
+        libmonitoring-plugin-perl           \
         libnagios-object-perl               \
         libnet-snmp-perl                    \
         libnet-tftp-perl                    \
