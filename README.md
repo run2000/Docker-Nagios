@@ -2,7 +2,7 @@
 
 Docker image for Nagios
 
-Nagios Core 4.5.11 running on Ubuntu 24.04 LTS with NagiosGraph, NRPE, NCPA, NSCA, and NRDP.
+Nagios Core 4.5.12 running on Ubuntu 24.04 LTS with NagiosGraph, NRPE, NCPA, NSCA, and NRDP.
 
 | Product | Version |
 | ------- | ------- |
