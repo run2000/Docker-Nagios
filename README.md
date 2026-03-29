@@ -6,10 +6,10 @@ Nagios Core 4.5.11 running on Ubuntu 24.04 LTS with NagiosGraph, NRPE, NCPA, NSC
 
 | Product | Version |
 | ------- | ------- |
-| Nagios Core | 4.5.11 |
+| Nagios Core | 4.5.12 |
 | Nagios Plugins | 2.4.12 |
 | NRPE | 4.1.3 |
-| NCPA | 3.2.2 |
+| NCPA | 3.3.1 |
 | NSCA | 2.10.3 |
 | NRDP | 2.0.6 |
 
@@ -54,10 +54,10 @@ These build arguments configure the versions of each component that are fetched 
 
 | Build Arg | Default Value | Description |
 | ------- | ------- | ------ |
-| NAGIOS_VER | 4.5.11 | The Nagios Core release version |
+| NAGIOS_VER | 4.5.12 | The Nagios Core release version |
 | NAGIOS_PLUGINS_VER | 2.4.12 | The Nagios Plugins release version |
 | NRPE_VER | 4.1.3 | The NRPE release version |
-| NCPA_VER | 3.2.2 | The NCPA release version |
+| NCPA_VER | 3.3.1 | The NCPA release version |
 | NSCA_VER | 2.10.3 | The NSCA release version |
 | NRDP_VER | 2.0.6 | The NRDP release version |
 
